@@ -10,6 +10,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.pulsar.documents.model.Document;
 import org.pulsar.documents.model.Payment;
+import org.pulsar.documents.util.DialogUtils;
 import org.pulsar.documents.util.StyleUtils;
 
 import java.math.BigDecimal;
@@ -120,7 +121,7 @@ public class PaymentDialog extends Stage {
     private void trySavePayment() {
         Payment payment = buildPayment();
         if (payment == null) {
-            showError();
+            DialogUtils.showError(this, "Не все поля заполнены корректно!");
         } else {
             documents.add(payment);
             this.close();
@@ -144,16 +145,6 @@ public class PaymentDialog extends Stage {
         } catch (NumberFormatException e) {
             return null;
         }
-
         return new Payment(number, date, user, decimalSum, employee);
-    }
-
-    private void showError() {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.initOwner(this);
-        alert.setTitle("Ошибка заполнения");
-        alert.setHeaderText(null);
-        alert.setContentText("Не все поля заполнены корректно!");
-        alert.showAndWait();
     }
 }
