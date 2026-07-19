@@ -14,6 +14,11 @@ public class Payment extends Document {
         this.employee = employee;
     }
 
+    @Override
+    protected String getType() {
+        return "Платёжка";
+    }
+
     public String getEmployee() {
         return employee;
     }

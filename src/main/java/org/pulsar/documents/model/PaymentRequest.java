@@ -20,6 +20,11 @@ public class PaymentRequest extends Document {
         this.commission = commission;
     }
 
+    @Override
+    protected String getType() {
+        return "Заявка на оплату";
+    }
+
     public String getCounterparty() {
         return counterparty;
     }

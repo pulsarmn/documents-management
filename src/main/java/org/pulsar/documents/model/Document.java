@@ -2,6 +2,7 @@ package org.pulsar.documents.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 
@@ -18,6 +19,8 @@ public abstract class Document {
         this.user = user;
         this.sum = sum;
     }
+
+    protected abstract String getType();
 
     public String getNumber() {
         return number;
@@ -53,5 +56,11 @@ public abstract class Document {
                 Objects.equals(date, document.date) &&
                 Objects.equals(user, document.user) &&
                 Objects.equals(sum, document.sum);
+    }
+
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return "%s от %s номер %s".formatted(getType(), date.format(formatter), number);
     }
 }
