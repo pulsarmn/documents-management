@@ -1,5 +1,6 @@
 plugins {
     id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
 repositories {
@@ -14,6 +15,15 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
     }
+}
+
+application {
+    mainClass = 'org.pulsar.documents.Launcher'
+}
+
+javafx {
+    version = '25'
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
 test {
