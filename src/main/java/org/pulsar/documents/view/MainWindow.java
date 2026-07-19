@@ -9,6 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.pulsar.documents.model.Document;
+import org.pulsar.documents.view.dialog.PaymentDialog;
 
 import java.util.List;
 
@@ -49,6 +50,11 @@ public class MainWindow extends BorderPane {
 
         exitBtn.setOnAction(event -> {
             Platform.exit();
+        });
+
+        paymentBtn.setOnAction(event -> {
+            PaymentDialog dialog = new PaymentDialog(documents);
+            dialog.showAndWait();
         });
 
         return List.of(invoiceBtn, paymentBtn, requestBtn, saveBtn, loadBtn, viewBtn, exitBtn);
