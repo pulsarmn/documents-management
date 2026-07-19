@@ -65,7 +65,6 @@ public class PaymentDialog extends Stage {
     private void addDateField(GridPane gridPane) {
         Label dateLabel = new Label("Дата:");
         datePicker = new DatePicker();
-        datePicker.setPromptText("7/19/2026");
 
         gridPane.add(dateLabel, 0, 1);
         gridPane.add(datePicker, 1, 1);

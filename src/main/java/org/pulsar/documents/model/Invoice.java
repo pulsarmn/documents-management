@@ -20,6 +20,11 @@ public class Invoice extends Document {
         this.count = count;
     }
 
+    @Override
+    protected String getType() {
+        return "Накладная";
+    }
+
     public String getCurrency() {
         return currency;
     }
