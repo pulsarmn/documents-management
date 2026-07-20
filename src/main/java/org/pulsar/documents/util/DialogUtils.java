@@ -5,7 +5,7 @@ import javafx.stage.Modality;
 import javafx.stage.Window;
 
 
-public abstract class DialogUtils {
+public abstract class DialogUtils { // Подсмотрел фишку с util классами в Spring :)
 
     public static void showError(Window owner, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

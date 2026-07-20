@@ -13,6 +13,7 @@ import org.pulsar.documents.model.Currency;
 import org.pulsar.documents.model.Document;
 import org.pulsar.documents.model.Invoice;
 import org.pulsar.documents.util.DialogUtils;
+import org.pulsar.documents.util.ValidationUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,6 +35,8 @@ public class InvoiceDialog extends Stage {
     public InvoiceDialog(ObservableList<Document> documents) {
         this.documents = documents;
         initModality(Modality.APPLICATION_MODAL);
+        setTitle("Создание накладной");
+
         GridPane gridPane = createDialogContent();
         setScene(new Scene(gridPane, 400, 600));
     }
@@ -162,7 +165,7 @@ public class InvoiceDialog extends Stage {
         String product = productField.getText();
         String count = countField.getText();
 
-        if (hasAnyNullOrBlank(number, date, user, sum, currency, currencyRate, product, count)) {
+        if (ValidationUtils.hasAnyNullOrBlank(number, date, user, sum, currency, currencyRate, product, count)) {
             return null;
         }
 
@@ -181,16 +184,5 @@ public class InvoiceDialog extends Stage {
         } catch (NumberFormatException e) {
             return null;
         }
-    }
-
-    private boolean hasAnyNullOrBlank(Object... objects) {
-        for (Object obj : objects) {
-            if (obj == null) {
-                return true;
-            } else if (obj instanceof String str && str.isBlank()) {
-                return true;
-            }
-        }
-        return false;
     }
 }
