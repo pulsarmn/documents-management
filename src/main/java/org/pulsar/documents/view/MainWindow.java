@@ -9,6 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.pulsar.documents.model.Document;
+import org.pulsar.documents.view.dialog.InvoiceDialog;
 import org.pulsar.documents.view.dialog.PaymentDialog;
 
 import java.util.List;
@@ -40,23 +41,70 @@ public class MainWindow extends BorderPane {
     }
 
     private List<Button> createRightPanelButtons() {
-        Button invoiceBtn = new Button("Накладная");
-        Button paymentBtn = new Button("Платёжка");
-        Button requestBtn = new Button("Заявка на оплату");
-        Button saveBtn = new Button("Сохранить");
-        Button loadBtn = new Button("Загрузить");
-        Button viewBtn = new Button("Просмотр");
-        Button exitBtn = new Button("Выход");
-
-        exitBtn.setOnAction(event -> {
-            Platform.exit();
-        });
-
-        paymentBtn.setOnAction(event -> {
-            PaymentDialog dialog = new PaymentDialog(documents);
-            dialog.showAndWait();
-        });
+        Button invoiceBtn = createInvoiceButton();
+        Button paymentBtn = createPaymentButton();
+        Button requestBtn = createPaymentRequestButton();
+        Button saveBtn = createSaveButton();
+        Button loadBtn = createLoadButton();
+        Button viewBtn = createViewButton();
+        Button exitBtn = createExitButton();
 
         return List.of(invoiceBtn, paymentBtn, requestBtn, saveBtn, loadBtn, viewBtn, exitBtn);
+    }
+
+    private Button createInvoiceButton() {
+        Button invoiceBtn = new Button("Накладная");
+        invoiceBtn.setOnAction(event -> {
+            InvoiceDialog invoiceDialog = new InvoiceDialog(documents);
+            invoiceDialog.showAndWait();
+        });
+        return invoiceBtn;
+    }
+
+    private Button createPaymentButton() {
+        Button paymentBtn = new Button("Платёжка");
+        paymentBtn.setOnAction(event -> {
+            PaymentDialog paymentDialog = new PaymentDialog(documents);
+            paymentDialog.showAndWait();
+        });
+        return paymentBtn;
+    }
+
+    private Button createPaymentRequestButton() {
+        Button requestBtn = new Button("Заявка на оплату");
+        requestBtn.setOnAction(event -> {
+
+        });
+        return requestBtn;
+    }
+
+    private Button createSaveButton() {
+        Button saveBtn = new Button("Сохранить");
+        saveBtn.setOnAction(event -> {
+
+        });
+        return saveBtn;
+    }
+
+    private Button createLoadButton() {
+        Button loadBtn = new Button("Загрузить");
+        loadBtn.setOnAction(event -> {
+
+        });
+        return loadBtn;
+    }
+
+    private Button createViewButton() {
+        Button viewBtn = new Button("Просмотр");
+        viewBtn.setOnAction(event -> {
+
+        });
+        return viewBtn;
+    }
+
+    private Button createExitButton() {
+        Button exitBtn = new Button("Выход");
+        exitBtn.setOnAction(_ -> Platform.exit());
+        return exitBtn;
     }
 }
