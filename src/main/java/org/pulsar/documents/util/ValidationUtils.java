@@ -1,6 +1,8 @@
 package org.pulsar.documents.util;
 
 
+import java.math.BigDecimal;
+
 public abstract class ValidationUtils {
 
     public static boolean hasAnyNullOrBlank(Object... objects) {
@@ -12,5 +14,23 @@ public abstract class ValidationUtils {
             }
         }
         return false;
+    }
+
+    public static boolean canBeDecimal(String str) {
+        try {
+            new BigDecimal(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean canBeInteger(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

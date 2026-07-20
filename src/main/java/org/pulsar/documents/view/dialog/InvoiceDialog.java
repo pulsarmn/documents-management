@@ -13,6 +13,7 @@ import org.pulsar.documents.model.Currency;
 import org.pulsar.documents.model.Document;
 import org.pulsar.documents.model.Invoice;
 import org.pulsar.documents.util.DialogUtils;
+import org.pulsar.documents.util.StyleUtils;
 import org.pulsar.documents.util.ValidationUtils;
 
 import java.math.BigDecimal;
@@ -62,6 +63,7 @@ public class InvoiceDialog extends Stage {
     private void addNumberField(GridPane gridPane) {
         Label numberLabel = new Label("Номер:");
         numberField = new TextField();
+        StyleUtils.applyNeutral(numberField);
         numberField.setPromptText("123");
 
         gridPane.add(numberLabel, 0, 0);
@@ -79,6 +81,7 @@ public class InvoiceDialog extends Stage {
     private void addUserField(GridPane gridPane) {
         Label userLabel = new Label("Пользователь:");
         userField = new TextField();
+        StyleUtils.applyNeutral(userField);
         userField.setPromptText("Александр");
 
         gridPane.add(userLabel, 0, 2);
@@ -88,10 +91,16 @@ public class InvoiceDialog extends Stage {
     private void addSumField(GridPane gridPane) {
         Label sumLabel = new Label("Сумма:");
         sumField = new TextField();
+        StyleUtils.applyNeutral(sumField);
         sumField.setPromptText("0");
+        sumField.setOnKeyTyped(_ -> validateSum());
 
         gridPane.add(sumLabel, 0, 3);
         gridPane.add(sumField, 1, 3);
+    }
+
+    private void validateSum() {
+        validatePositiveDecimal(sumField);
     }
 
     private void addCurrencyField(GridPane gridPane) {
@@ -114,15 +123,22 @@ public class InvoiceDialog extends Stage {
     private void addCurrencyRateField(GridPane gridPane) {
         Label currencyRateLabel = new Label("Курс валюты:");
         currencyRateField = new TextField();
+        StyleUtils.applyNeutral(currencyRateField);
         currencyRateField.setPromptText("0");
+        currencyRateField.setOnKeyTyped(_ -> validateCurrencyRate());
 
         gridPane.add(currencyRateLabel, 0, 5);
         gridPane.add(currencyRateField, 1, 5);
     }
 
+    private void validateCurrencyRate() {
+        validatePositiveDecimal(currencyRateField);
+    }
+
     private void addProductField(GridPane gridPane) {
         Label productLabel = new Label("Товар:");
         productField = new TextField();
+        StyleUtils.applyNeutral(productField);
         productField.setPromptText("Товар");
 
         gridPane.add(productLabel, 0, 6);
@@ -132,10 +148,21 @@ public class InvoiceDialog extends Stage {
     private void addCountField(GridPane gridPane) {
         Label countLabel = new Label("Количество:");
         countField = new TextField();
+        StyleUtils.applyNeutral(countField);
         countField.setPromptText("0");
+        countField.setOnKeyTyped(_ -> validateCount());
 
         gridPane.add(countLabel, 0, 7);
         gridPane.add(countField, 1, 7);
+    }
+
+    private void validateCount() {
+        String value = countField.getText();
+        if (ValidationUtils.canBeInteger(value) && Integer.parseInt(value) > 0) {
+            StyleUtils.applyValidStyle(countField);
+        } else {
+            StyleUtils.applyInvalidStyle(countField);
+        }
     }
 
     private void addSaveButton(GridPane gridPane) {
@@ -183,6 +210,15 @@ public class InvoiceDialog extends Stage {
             return new Invoice(number, date, user, decimalSum, currency, decimalCurrencyRate, product, numCount);
         } catch (NumberFormatException e) {
             return null;
+        }
+    }
+
+    private void validatePositiveDecimal(TextField textField) {
+        String value = textField.getText();
+        if (ValidationUtils.canBeDecimal(value) && new BigDecimal(value).compareTo(BigDecimal.ZERO) > 0) {
+            StyleUtils.applyValidStyle(textField);
+        } else {
+            StyleUtils.applyInvalidStyle(textField);
         }
     }
 }
