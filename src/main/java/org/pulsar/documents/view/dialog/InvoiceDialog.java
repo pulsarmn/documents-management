@@ -28,7 +28,7 @@ public class InvoiceDialog extends Stage {
     private DatePicker datePicker;
     private TextField userField;
     private TextField sumField;
-    private ComboBox<Currency> currencyField;
+    private ComboBox<Currency> currencyComboBox;
     private TextField currencyRateField;
     private TextField productField;
     private TextField countField;
@@ -105,15 +105,15 @@ public class InvoiceDialog extends Stage {
 
     private void addCurrencyField(GridPane gridPane) {
         Label currencyLabel = new Label("Валюта:");
-        currencyField = new ComboBox<>();
-        currencyField.setItems(getCurrencies());
+        currencyComboBox = new ComboBox<>();
+        currencyComboBox.setItems(getCurrencies());
 
         if (Currency.values().length != 0) {
-            currencyField.setValue(Currency.RUB);
+            currencyComboBox.setValue(Currency.RUB);
         }
 
         gridPane.add(currencyLabel, 0, 4);
-        gridPane.add(currencyField, 1, 4);
+        gridPane.add(currencyComboBox, 1, 4);
     }
 
     private ObservableList<Currency> getCurrencies() {
@@ -187,7 +187,7 @@ public class InvoiceDialog extends Stage {
         LocalDate date = datePicker.getValue();
         String user = userField.getText();
         String sum = sumField.getText();
-        Currency currency = currencyField.getValue();
+        Currency currency = currencyComboBox.getValue();
         String currencyRate = currencyRateField.getText();
         String product = productField.getText();
         String count = countField.getText();
