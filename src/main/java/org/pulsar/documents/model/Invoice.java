@@ -7,12 +7,12 @@ import java.util.Objects;
 
 public class Invoice extends Document {
 
-    private String currency;
+    private Currency currency;
     private BigDecimal currencyRate;
     private String product;
-    private BigDecimal count;
+    private int count;
 
-    public Invoice(String number, LocalDate date, String user, BigDecimal sum, String currency, BigDecimal currencyRate, String product, BigDecimal count) {
+    public Invoice(String number, LocalDate date, String user, BigDecimal sum, Currency currency, BigDecimal currencyRate, String product, int count) {
         super(number, date, user, sum);
         this.currency = currency;
         this.currencyRate = currencyRate;
@@ -25,7 +25,7 @@ public class Invoice extends Document {
         return "Накладная";
     }
 
-    public String getCurrency() {
+    public Currency getCurrency() {
         return currency;
     }
 
@@ -37,7 +37,7 @@ public class Invoice extends Document {
         return product;
     }
 
-    public BigDecimal getCount() {
+    public int getCount() {
         return count;
     }
 

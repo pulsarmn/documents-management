@@ -12,6 +12,7 @@ import org.pulsar.documents.model.Document;
 import org.pulsar.documents.model.Payment;
 import org.pulsar.documents.util.DialogUtils;
 import org.pulsar.documents.util.StyleUtils;
+import org.pulsar.documents.util.ValidationUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -33,8 +34,7 @@ public class PaymentDialog extends Stage {
         setTitle("Создание платёжки");
 
         GridPane gridPane = getDialogContent();
-        Scene scene = new Scene(gridPane, 350, 500);
-        setScene(scene);
+        setScene(new Scene(gridPane, 350, 500));
     }
 
     private GridPane getDialogContent() {
@@ -134,16 +134,15 @@ public class PaymentDialog extends Stage {
         String sum = sumField.getText();
         String employee = employeeField.getText();
 
-        if (number.isBlank() || date == null || user.isBlank() || sum.isBlank() || employee.isBlank()) {
+        if (ValidationUtils.hasAnyNullOrBlank(number, date, user, sum, employee)) {
             return null;
         }
 
-        BigDecimal decimalSum;
         try {
-            decimalSum = new BigDecimal(sum);
+            BigDecimal decimalSum = new BigDecimal(sum);
+            return new Payment(number, date, user, decimalSum, employee);
         } catch (NumberFormatException e) {
             return null;
         }
-        return new Payment(number, date, user, decimalSum, employee);
     }
 }
