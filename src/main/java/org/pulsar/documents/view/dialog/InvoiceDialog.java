@@ -9,7 +9,10 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.pulsar.documents.model.Currency;
 import org.pulsar.documents.model.Document;
+
+import java.util.Arrays;
 
 
 public class InvoiceDialog extends Stage {
@@ -20,7 +23,7 @@ public class InvoiceDialog extends Stage {
     private DatePicker datePicker;
     private TextField userField;
     private TextField sumField;
-    private ComboBox<String> currencyField;
+    private ComboBox<Currency> currencyField;
     private TextField currencyRateField;
     private TextField productField;
     private TextField countField;
@@ -94,8 +97,8 @@ public class InvoiceDialog extends Stage {
         gridPane.add(currencyField, 1, 4);
     }
 
-    private ObservableList<String> getCurrencies() {
-        return FXCollections.observableArrayList("Рубль", "Доллар", "Евро");
+    private ObservableList<Currency> getCurrencies() {
+        return FXCollections.observableArrayList(Currency.values());
     }
 
     private void addCurrencyRateField(GridPane gridPane) {
