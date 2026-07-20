@@ -11,8 +11,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.pulsar.documents.model.Currency;
 import org.pulsar.documents.model.Document;
+import org.pulsar.documents.model.Invoice;
+import org.pulsar.documents.util.DialogUtils;
 
-import java.util.Arrays;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 
 public class InvoiceDialog extends Stage {
@@ -75,7 +78,7 @@ public class InvoiceDialog extends Stage {
         userField = new TextField();
         userField.setPromptText("Александр");
 
-        gridPane.add(userLabel, 0,  2);
+        gridPane.add(userLabel, 0, 2);
         gridPane.add(userField, 1, 2);
     }
 
@@ -92,6 +95,10 @@ public class InvoiceDialog extends Stage {
         Label currencyLabel = new Label("Валюта:");
         currencyField = new ComboBox<>();
         currencyField.setItems(getCurrencies());
+
+        if (Currency.values().length != 0) {
+            currencyField.setValue(Currency.RUB);
+        }
 
         gridPane.add(currencyLabel, 0, 4);
         gridPane.add(currencyField, 1, 4);
@@ -131,5 +138,59 @@ public class InvoiceDialog extends Stage {
     private void addSaveButton(GridPane gridPane) {
         Button saveButton = new Button("OK");
         gridPane.add(saveButton, 1, 8);
+
+        saveButton.setOnAction(_ -> trySaveInvoice());
+    }
+
+    private void trySaveInvoice() {
+        Invoice invoice = buildInvoice();
+        if (invoice == null) {
+            DialogUtils.showError(this, "Не все поля заполнены корректно!");
+        } else {
+            documents.add(invoice);
+            this.close();
+        }
+    }
+
+    private Invoice buildInvoice() {
+        String number = numberField.getText();
+        LocalDate date = datePicker.getValue();
+        String user = userField.getText();
+        String sum = sumField.getText();
+        Currency currency = currencyField.getValue();
+        String currencyRate = currencyRateField.getText();
+        String product = productField.getText();
+        String count = countField.getText();
+
+        if (hasAnyNullOrBlank(number, date, user, sum, currency, currencyRate, product, count)) {
+            return null;
+        }
+
+        try {
+            BigDecimal decimalSum = new BigDecimal(sum);
+            BigDecimal decimalCurrencyRate = new BigDecimal(currencyRate);
+            int numCount = Integer.parseInt(count);
+
+            if (decimalSum.compareTo(BigDecimal.ZERO) <= 0 ||
+                    decimalCurrencyRate.compareTo(BigDecimal.ZERO) <= 0 ||
+                    numCount <= 0) {
+                return null;
+            }
+
+            return new Invoice(number, date, user, decimalSum, currency, decimalCurrencyRate, product, numCount);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private boolean hasAnyNullOrBlank(Object... objects) {
+        for (Object obj : objects) {
+            if (obj == null) {
+                return true;
+            } else if (obj instanceof String str && str.isBlank()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
