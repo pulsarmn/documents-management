@@ -11,10 +11,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.pulsar.documents.model.Currency;
 import org.pulsar.documents.model.Document;
+import org.pulsar.documents.model.PaymentRequest;
+import org.pulsar.documents.util.DialogUtils;
 import org.pulsar.documents.util.StyleUtils;
 import org.pulsar.documents.util.ValidationUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 
 public class PaymentRequestDialog extends Stage {
@@ -147,14 +150,61 @@ public class PaymentRequestDialog extends Stage {
         commissionField = new TextField();
         StyleUtils.applyNeutral(commissionField);
         commissionField.setPromptText("10");
+        commissionField.setOnKeyTyped(_ -> validateCommission());
 
         gridPane.add(commissionLabel, 0, 7);
         gridPane.add(commissionField, 1, 7);
     }
 
+    private void validateCommission() {
+        validatePositiveDecimal(commissionField);
+    }
+
     private void addSaveButton(GridPane gridPane) {
         Button saveButton = new Button("OK");
         gridPane.add(saveButton, 1, 8);
+
+        saveButton.setOnAction(_ -> trySavePaymentRequest());
+    }
+
+    private void trySavePaymentRequest() {
+        PaymentRequest paymentRequest = buildPaymentRequest();
+        if (paymentRequest == null) {
+            DialogUtils.showError(this, "Не все поля заполнены корректно!");
+        } else {
+            documents.add(paymentRequest);
+            this.close();
+        }
+    }
+
+    private PaymentRequest buildPaymentRequest() {
+        String number = numberField.getText();
+        LocalDate date = datePicker.getValue();
+        String user = userField.getText();
+        String sum = sumField.getText();
+        String counterparty = counterpartyField.getText();
+        Currency currency = currencyComboBox.getValue();
+        String currencyRate = currencyRateField.getText();
+        String commission = commissionField.getText();
+
+        if (ValidationUtils.hasAnyNullOrBlank(number, date, user, sum, counterparty, currency, currencyRate, commission)) {
+            return null;
+        }
+
+        try {
+            BigDecimal decimalSum = new BigDecimal(sum);
+            BigDecimal decimalCurrencyRate = new BigDecimal(currencyRate);
+            BigDecimal decimalCommission = new BigDecimal(commission);
+
+            if (decimalSum.compareTo(BigDecimal.ZERO) <= 0 ||
+                    decimalCurrencyRate.compareTo(BigDecimal.ZERO) <= 0 ||
+                    decimalCommission.compareTo(BigDecimal.ZERO) <= 0) {
+                return null;
+            }
+            return new PaymentRequest(number, date, user, decimalSum, counterparty, currency, decimalCurrencyRate, decimalCommission);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private void validatePositiveDecimal(TextField textField) {
