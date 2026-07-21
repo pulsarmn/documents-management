@@ -9,6 +9,8 @@ public class Payment extends Document {
 
     private String employee;
 
+    public Payment() {}
+
     public Payment(String number, LocalDate date, String user, BigDecimal sum, String employee) {
         super(number, date, user, sum);
         this.employee = employee;
