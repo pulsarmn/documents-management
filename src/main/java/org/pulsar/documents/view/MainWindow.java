@@ -13,6 +13,7 @@ import javafx.stage.Window;
 import org.pulsar.documents.service.DocumentStorageService;
 import org.pulsar.documents.model.Document;
 import org.pulsar.documents.util.DialogUtils;
+import org.pulsar.documents.view.dialog.DocumentViewDialog;
 import org.pulsar.documents.view.dialog.InvoiceDialog;
 import org.pulsar.documents.view.dialog.PaymentDialog;
 import org.pulsar.documents.view.dialog.PaymentRequestDialog;
@@ -151,7 +152,26 @@ public class MainWindow extends BorderPane {
         viewBtn.setOnAction(_ -> {
 
         });
+
+        listView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                viewDocument();
+            }
+        });
         return viewBtn;
+    }
+
+    private void viewDocument() {
+        Document selectedDocument = listView.getSelectionModel().getSelectedItem();
+
+        if (selectedDocument == null) {
+            DialogUtils.showWarning(getOwnerWindow(), "Выберите документ из списка для просмотра!");
+            return;
+        }
+
+        DocumentViewDialog documentViewDialog = new DocumentViewDialog(selectedDocument);
+        documentViewDialog.initOwner(getOwnerWindow());
+        documentViewDialog.showAndWait();
     }
 
     private Button createExitButton() {
