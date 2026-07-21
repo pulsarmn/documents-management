@@ -120,10 +120,30 @@ public class MainWindow extends BorderPane {
 
     private Button createLoadButton() {
         Button loadBtn = new Button("Загрузить");
-        loadBtn.setOnAction(_ -> {
-
-        });
+        loadBtn.setOnAction(_ -> loadDocuments());
         return loadBtn;
+    }
+
+    private void loadDocuments() {
+        Window owner = getOwnerWindow();
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Выбрать файл");
+
+        FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON файлы (*.json)", "*.json");
+        fileChooser.getExtensionFilters().add(jsonFilter);
+
+        File file = fileChooser.showOpenDialog(owner);
+        if (file != null) {
+            try {
+                List<Document> loadedDocuments = storageService.loadFromFile(file);
+                documents.clear();
+                documents.addAll(loadedDocuments);
+                DialogUtils.showInfo(owner, "Успешно загружено документов: " + loadedDocuments.size());
+            } catch (Exception e) {
+                DialogUtils.showError(owner, "Ошибка при загрузке файла: " + e.getMessage());
+            }
+        }
     }
 
     private Button createViewButton() {

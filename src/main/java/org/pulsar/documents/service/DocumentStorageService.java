@@ -7,7 +7,6 @@ import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 
@@ -22,11 +21,11 @@ public class DocumentStorageService {
     }
 
     public void saveToFile(File file, List<Document> documents) {
-        try {
-            objectMapper.writerFor(new TypeReference<List<Document>>() {})
-                    .writeValue(file, documents);
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка сохранения JSON: " + e.getMessage());
-        }
+        objectMapper.writerFor(new TypeReference<List<Document>>() {})
+                .writeValue(file, documents);
+    }
+
+    public List<Document> loadFromFile(File file) {
+        return objectMapper.readValue(file, new TypeReference<List<Document>>() {});
     }
 }
