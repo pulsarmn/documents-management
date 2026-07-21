@@ -2,17 +2,11 @@ package org.pulsar.documents.view.dialog;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import org.pulsar.documents.model.Currency;
 import org.pulsar.documents.model.Document;
 import org.pulsar.documents.model.Invoice;
-import org.pulsar.documents.util.DialogUtils;
 import org.pulsar.documents.util.StyleUtils;
 import org.pulsar.documents.util.ValidationUtils;
 
@@ -20,140 +14,54 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
-public class InvoiceDialog extends Stage {
+public class InvoiceDialog extends AbstractDocumentDialog<Invoice> {
 
-    private final ObservableList<Document> documents;
-
-    private TextField numberField;
-    private DatePicker datePicker;
-    private TextField userField;
-    private TextField sumField;
     private ComboBox<Currency> currencyComboBox;
     private TextField currencyRateField;
     private TextField productField;
     private TextField countField;
 
+    private static final String DEFAULT_TITLE = "Создание накладной";
+
     public InvoiceDialog(ObservableList<Document> documents) {
-        this.documents = documents;
-        initModality(Modality.APPLICATION_MODAL);
-        setTitle("Создание накладной");
-
-        GridPane gridPane = createDialogContent();
-        setScene(new Scene(gridPane, 400, 600));
+        super(documents, DEFAULT_TITLE, 400, 600);
     }
 
-    private GridPane createDialogContent() {
-        GridPane gridPane = new GridPane(10, 15);
-        gridPane.setPadding(new Insets(10));
-        gridPane.setAlignment(Pos.TOP_CENTER);
-
-        addNumberField(gridPane);
-        addDatePicker(gridPane);
-        addUserField(gridPane);
-        addSumField(gridPane);
-        addCurrencyField(gridPane);
-        addCurrencyRateField(gridPane);
-        addProductField(gridPane);
-        addCountField(gridPane);
-        addSaveButton(gridPane);
-
-        return gridPane;
+    @Override
+    protected void addCustomFields() {
+        addCurrencyField();
+        addCurrencyRateField();
+        addProductField();
+        addCountField();
     }
 
-    private void addNumberField(GridPane gridPane) {
-        Label numberLabel = new Label("Номер:");
-        numberField = new TextField();
-        StyleUtils.applyNeutral(numberField);
-        numberField.setPromptText("123");
-
-        gridPane.add(numberLabel, 0, 0);
-        gridPane.add(numberField, 1, 0);
-    }
-
-    private void addDatePicker(GridPane gridPane) {
-        Label dateLabel = new Label("Дата:");
-        datePicker = new DatePicker();
-
-        gridPane.add(dateLabel, 0, 1);
-        gridPane.add(datePicker, 1, 1);
-    }
-
-    private void addUserField(GridPane gridPane) {
-        Label userLabel = new Label("Пользователь:");
-        userField = new TextField();
-        StyleUtils.applyNeutral(userField);
-        userField.setPromptText("Александр");
-
-        gridPane.add(userLabel, 0, 2);
-        gridPane.add(userField, 1, 2);
-    }
-
-    private void addSumField(GridPane gridPane) {
-        Label sumLabel = new Label("Сумма:");
-        sumField = new TextField();
-        StyleUtils.applyNeutral(sumField);
-        sumField.setPromptText("0");
-        sumField.setOnKeyTyped(_ -> validateSum());
-
-        gridPane.add(sumLabel, 0, 3);
-        gridPane.add(sumField, 1, 3);
-    }
-
-    private void validateSum() {
-        validatePositiveDecimal(sumField);
-    }
-
-    private void addCurrencyField(GridPane gridPane) {
-        Label currencyLabel = new Label("Валюта:");
-        currencyComboBox = new ComboBox<>();
-        currencyComboBox.setItems(getCurrencies());
-
+    private void addCurrencyField() {
+        currencyComboBox = new ComboBox<>(getCurrencies());
         if (Currency.values().length != 0) {
             currencyComboBox.setValue(Currency.RUB);
         }
-
-        gridPane.add(currencyLabel, 0, 4);
-        gridPane.add(currencyComboBox, 1, 4);
+        addRow("Валюта:", currencyComboBox);
     }
 
     private ObservableList<Currency> getCurrencies() {
         return FXCollections.observableArrayList(Currency.values());
     }
 
-    private void addCurrencyRateField(GridPane gridPane) {
-        Label currencyRateLabel = new Label("Курс валюты:");
-        currencyRateField = new TextField();
-        StyleUtils.applyNeutral(currencyRateField);
-        currencyRateField.setPromptText("0");
-        currencyRateField.setOnKeyTyped(_ -> validateCurrencyRate());
-
-        gridPane.add(currencyRateLabel, 0, 5);
-        gridPane.add(currencyRateField, 1, 5);
+    private void addCurrencyRateField() {
+        currencyRateField = createTextField("0");
+        currencyRateField.setOnKeyTyped(_ -> validatePositiveDecimal(currencyRateField));
+        addRow("Курс валюты:", currencyRateField);
     }
 
-    private void validateCurrencyRate() {
-        validatePositiveDecimal(currencyRateField);
+    private void addProductField() {
+        productField = createTextField("Товар");
+        addRow("Товар:", productField);
     }
 
-    private void addProductField(GridPane gridPane) {
-        Label productLabel = new Label("Товар:");
-        productField = new TextField();
-        StyleUtils.applyNeutral(productField);
-        productField.setPromptText("Товар");
-
-        gridPane.add(productLabel, 0, 6);
-        gridPane.add(productField, 1, 6);
-    }
-
-    private void addCountField(GridPane gridPane) {
-        Label countLabel = new Label("Количество:");
-        countField = new TextField();
-        StyleUtils.applyNeutral(countField);
-        countField.setPromptText("0");
+    private void addCountField() {
+        countField = createTextField("0");
         countField.setOnKeyTyped(_ -> validateCount());
-
-        gridPane.add(countLabel, 0, 7);
-        gridPane.add(countField, 1, 7);
+        addRow("Количество:", countField);
     }
 
     private void validateCount() {
@@ -165,24 +73,8 @@ public class InvoiceDialog extends Stage {
         }
     }
 
-    private void addSaveButton(GridPane gridPane) {
-        Button saveButton = new Button("OK");
-        gridPane.add(saveButton, 1, 8);
-
-        saveButton.setOnAction(_ -> trySaveInvoice());
-    }
-
-    private void trySaveInvoice() {
-        Invoice invoice = buildInvoice();
-        if (invoice == null) {
-            DialogUtils.showError(this, "Не все поля заполнены корректно!");
-        } else {
-            documents.add(invoice);
-            this.close();
-        }
-    }
-
-    private Invoice buildInvoice() {
+    @Override
+    protected Invoice buildDocument() {
         String number = numberField.getText();
         LocalDate date = datePicker.getValue();
         String user = userField.getText();
@@ -210,15 +102,6 @@ public class InvoiceDialog extends Stage {
             return new Invoice(number, date, user, decimalSum, currency, decimalCurrencyRate, product, numCount);
         } catch (NumberFormatException e) {
             return null;
-        }
-    }
-
-    private void validatePositiveDecimal(TextField textField) {
-        String value = textField.getText();
-        if (ValidationUtils.canBeDecimal(value) && new BigDecimal(value).compareTo(BigDecimal.ZERO) > 0) {
-            StyleUtils.applyValidStyle(textField);
-        } else {
-            StyleUtils.applyInvalidStyle(textField);
         }
     }
 }

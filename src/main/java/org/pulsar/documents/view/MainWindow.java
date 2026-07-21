@@ -21,7 +21,7 @@ import org.pulsar.documents.view.dialog.PaymentRequestDialog;
 import java.io.File;
 import java.util.List;
 
-
+// TODO - refactor this bitch
 public class MainWindow extends BorderPane {
 
     private final ObservableList<Document> documents = FXCollections.observableArrayList();
