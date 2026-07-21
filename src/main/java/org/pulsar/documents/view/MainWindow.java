@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import org.pulsar.documents.model.Document;
 import org.pulsar.documents.view.dialog.InvoiceDialog;
 import org.pulsar.documents.view.dialog.PaymentDialog;
+import org.pulsar.documents.view.dialog.PaymentRequestDialog;
 
 import java.util.List;
 
@@ -73,7 +74,8 @@ public class MainWindow extends BorderPane {
     private Button createPaymentRequestButton() {
         Button requestBtn = new Button("Заявка на оплату");
         requestBtn.setOnAction(event -> {
-
+            PaymentRequestDialog paymentRequestDialog = new PaymentRequestDialog(documents);
+            paymentRequestDialog.showAndWait();
         });
         return requestBtn;
     }

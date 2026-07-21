@@ -11,7 +11,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.pulsar.documents.model.Currency;
 import org.pulsar.documents.model.Document;
-import org.pulsar.documents.model.Invoice;
+import org.pulsar.documents.model.PaymentRequest;
 import org.pulsar.documents.util.DialogUtils;
 import org.pulsar.documents.util.StyleUtils;
 import org.pulsar.documents.util.ValidationUtils;
@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
-public class InvoiceDialog extends Stage {
+public class PaymentRequestDialog extends Stage {
 
     private final ObservableList<Document> documents;
 
@@ -28,15 +28,15 @@ public class InvoiceDialog extends Stage {
     private DatePicker datePicker;
     private TextField userField;
     private TextField sumField;
+    private TextField counterpartyField;
     private ComboBox<Currency> currencyComboBox;
     private TextField currencyRateField;
-    private TextField productField;
-    private TextField countField;
+    private TextField commissionField;
 
-    public InvoiceDialog(ObservableList<Document> documents) {
+    public PaymentRequestDialog(ObservableList<Document> documents) {
         this.documents = documents;
         initModality(Modality.APPLICATION_MODAL);
-        setTitle("Создание накладной");
+        setTitle("Создание заявки на оплату");
 
         GridPane gridPane = createDialogContent();
         setScene(new Scene(gridPane, 400, 600));
@@ -51,10 +51,10 @@ public class InvoiceDialog extends Stage {
         addDatePicker(gridPane);
         addUserField(gridPane);
         addSumField(gridPane);
+        addCounterpartyField(gridPane);
         addCurrencyField(gridPane);
         addCurrencyRateField(gridPane);
-        addProductField(gridPane);
-        addCountField(gridPane);
+        addCommissionField(gridPane);
         addSaveButton(gridPane);
 
         return gridPane;
@@ -103,6 +103,16 @@ public class InvoiceDialog extends Stage {
         validatePositiveDecimal(sumField);
     }
 
+    private void addCounterpartyField(GridPane gridPane) {
+        Label counterpartyLabel = new Label("Контрагент:");
+        counterpartyField = new TextField();
+        StyleUtils.applyNeutral(counterpartyField);
+        counterpartyField.setPromptText("Контрагент");
+
+        gridPane.add(counterpartyLabel, 0, 4);
+        gridPane.add(counterpartyField, 1, 4);
+    }
+
     private void addCurrencyField(GridPane gridPane) {
         Label currencyLabel = new Label("Валюта:");
         currencyComboBox = new ComboBox<>();
@@ -112,8 +122,8 @@ public class InvoiceDialog extends Stage {
             currencyComboBox.setValue(Currency.RUB);
         }
 
-        gridPane.add(currencyLabel, 0, 4);
-        gridPane.add(currencyComboBox, 1, 4);
+        gridPane.add(currencyLabel, 0, 5);
+        gridPane.add(currencyComboBox, 1, 5);
     }
 
     private ObservableList<Currency> getCurrencies() {
@@ -127,87 +137,71 @@ public class InvoiceDialog extends Stage {
         currencyRateField.setPromptText("0");
         currencyRateField.setOnKeyTyped(_ -> validateCurrencyRate());
 
-        gridPane.add(currencyRateLabel, 0, 5);
-        gridPane.add(currencyRateField, 1, 5);
+        gridPane.add(currencyRateLabel, 0, 6);
+        gridPane.add(currencyRateField, 1, 6);
     }
 
     private void validateCurrencyRate() {
         validatePositiveDecimal(currencyRateField);
     }
 
-    private void addProductField(GridPane gridPane) {
-        Label productLabel = new Label("Товар:");
-        productField = new TextField();
-        StyleUtils.applyNeutral(productField);
-        productField.setPromptText("Товар");
+    private void addCommissionField(GridPane gridPane) {
+        Label commissionLabel = new Label("Комиссия:");
+        commissionField = new TextField();
+        StyleUtils.applyNeutral(commissionField);
+        commissionField.setPromptText("10");
+        commissionField.setOnKeyTyped(_ -> validateCommission());
 
-        gridPane.add(productLabel, 0, 6);
-        gridPane.add(productField, 1, 6);
+        gridPane.add(commissionLabel, 0, 7);
+        gridPane.add(commissionField, 1, 7);
     }
 
-    private void addCountField(GridPane gridPane) {
-        Label countLabel = new Label("Количество:");
-        countField = new TextField();
-        StyleUtils.applyNeutral(countField);
-        countField.setPromptText("0");
-        countField.setOnKeyTyped(_ -> validateCount());
-
-        gridPane.add(countLabel, 0, 7);
-        gridPane.add(countField, 1, 7);
-    }
-
-    private void validateCount() {
-        String value = countField.getText();
-        if (ValidationUtils.canBeInteger(value) && Integer.parseInt(value) > 0) {
-            StyleUtils.applyValidStyle(countField);
-        } else {
-            StyleUtils.applyInvalidStyle(countField);
-        }
+    private void validateCommission() {
+        validatePositiveDecimal(commissionField);
     }
 
     private void addSaveButton(GridPane gridPane) {
         Button saveButton = new Button("OK");
         gridPane.add(saveButton, 1, 8);
 
-        saveButton.setOnAction(_ -> trySaveInvoice());
+        saveButton.setOnAction(_ -> trySavePaymentRequest());
     }
 
-    private void trySaveInvoice() {
-        Invoice invoice = buildInvoice();
-        if (invoice == null) {
+    private void trySavePaymentRequest() {
+        PaymentRequest paymentRequest = buildPaymentRequest();
+        if (paymentRequest == null) {
             DialogUtils.showError(this, "Не все поля заполнены корректно!");
         } else {
-            documents.add(invoice);
+            documents.add(paymentRequest);
             this.close();
         }
     }
 
-    private Invoice buildInvoice() {
+    private PaymentRequest buildPaymentRequest() {
         String number = numberField.getText();
         LocalDate date = datePicker.getValue();
         String user = userField.getText();
         String sum = sumField.getText();
+        String counterparty = counterpartyField.getText();
         Currency currency = currencyComboBox.getValue();
         String currencyRate = currencyRateField.getText();
-        String product = productField.getText();
-        String count = countField.getText();
+        String commission = commissionField.getText();
 
-        if (ValidationUtils.hasAnyNullOrBlank(number, date, user, sum, currency, currencyRate, product, count)) {
+        if (ValidationUtils.hasAnyNullOrBlank(number, date, user, sum, counterparty, currency, currencyRate, commission)) {
             return null;
         }
 
         try {
             BigDecimal decimalSum = new BigDecimal(sum);
             BigDecimal decimalCurrencyRate = new BigDecimal(currencyRate);
-            int numCount = Integer.parseInt(count);
+            BigDecimal decimalCommission = new BigDecimal(commission);
 
             if (decimalSum.compareTo(BigDecimal.ZERO) <= 0 ||
                     decimalCurrencyRate.compareTo(BigDecimal.ZERO) <= 0 ||
-                    numCount <= 0) {
+                    decimalCommission.compareTo(BigDecimal.ZERO) <= 0) {
                 return null;
             }
-
-            return new Invoice(number, date, user, decimalSum, currency, decimalCurrencyRate, product, numCount);
+            return new PaymentRequest(number, date, user, decimalSum, counterparty, currency, decimalCurrencyRate, decimalCommission);
         } catch (NumberFormatException e) {
             return null;
         }

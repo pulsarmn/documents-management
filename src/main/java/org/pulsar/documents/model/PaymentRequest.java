@@ -8,11 +8,11 @@ import java.util.Objects;
 public class PaymentRequest extends Document {
 
     private String counterparty;
-    private String currency;
+    private Currency currency;
     private BigDecimal currencyRate;
     private BigDecimal commission;
 
-    public PaymentRequest(String number, LocalDate date, String user, BigDecimal sum, String counterparty, String currency, BigDecimal currencyRate, BigDecimal commission) {
+    public PaymentRequest(String number, LocalDate date, String user, BigDecimal sum, String counterparty, Currency currency, BigDecimal currencyRate, BigDecimal commission) {
         super(number, date, user, sum);
         this.counterparty = counterparty;
         this.currency = currency;
@@ -29,7 +29,7 @@ public class PaymentRequest extends Document {
         return counterparty;
     }
 
-    public String getCurrency() {
+    public Currency getCurrency() {
         return currency;
     }
 
