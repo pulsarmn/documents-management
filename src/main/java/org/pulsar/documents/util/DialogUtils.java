@@ -7,31 +7,27 @@ import javafx.stage.Window;
 
 public abstract class DialogUtils { // Подсмотрел фишку с util классами в Spring :)
 
-    public static void showError(Window owner, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.initOwner(owner);
-        alert.setTitle("Ошибка");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    private static final String INFO_TITLE = "Информация";
+    private static final String WARNING_TITLE = "Предупреждение";
+    private static final String ERROR_TITLE = "Ошибка";
+
+    public static void showInfo(Window owner, String message) {
+        showAlert(Alert.AlertType.INFORMATION, owner, INFO_TITLE, message);
     }
 
     public static void showWarning(Window owner, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.initOwner(owner);
-        alert.setTitle("Предупреждение");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        showAlert(Alert.AlertType.WARNING, owner, WARNING_TITLE, message);
     }
 
-    public static void showInfo(Window owner, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    public static void showError(Window owner, String message) {
+        showAlert(Alert.AlertType.ERROR, owner, ERROR_TITLE, message);
+    }
+
+    private static void showAlert(Alert.AlertType type, Window owner, String title, String message) {
+        Alert alert = new Alert(type);
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.initOwner(owner);
-        alert.setTitle("Информация");
+        alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

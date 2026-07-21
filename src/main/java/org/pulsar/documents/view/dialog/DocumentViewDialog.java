@@ -50,7 +50,7 @@ public class DocumentViewDialog extends Stage {
                 addRow(grid, row++, "Курс валюты:", request.getCurrencyRate().toString());
                 addRow(grid, row++, "Комиссия:", request.getCommission().toString());
             }
-            case null, default -> {}
+            default -> {}
         }
 
         Button closeBtn = new Button("Закрыть");
