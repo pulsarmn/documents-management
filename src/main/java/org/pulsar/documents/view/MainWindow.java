@@ -8,11 +8,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
+import org.pulsar.documents.service.DocumentStorageService;
 import org.pulsar.documents.model.Document;
+import org.pulsar.documents.util.DialogUtils;
 import org.pulsar.documents.view.dialog.InvoiceDialog;
 import org.pulsar.documents.view.dialog.PaymentDialog;
 import org.pulsar.documents.view.dialog.PaymentRequestDialog;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -20,6 +25,7 @@ public class MainWindow extends BorderPane {
 
     private final ObservableList<Document> documents = FXCollections.observableArrayList();
     private final ListView<Document> listView = new ListView<>(documents);
+    private final DocumentStorageService storageService = new DocumentStorageService();
 
     public MainWindow() {
         super.setCenter(listView);
@@ -55,7 +61,7 @@ public class MainWindow extends BorderPane {
 
     private Button createInvoiceButton() {
         Button invoiceBtn = new Button("Накладная");
-        invoiceBtn.setOnAction(event -> {
+        invoiceBtn.setOnAction(_ -> {
             InvoiceDialog invoiceDialog = new InvoiceDialog(documents);
             invoiceDialog.showAndWait();
         });
@@ -64,7 +70,7 @@ public class MainWindow extends BorderPane {
 
     private Button createPaymentButton() {
         Button paymentBtn = new Button("Платёжка");
-        paymentBtn.setOnAction(event -> {
+        paymentBtn.setOnAction(_ -> {
             PaymentDialog paymentDialog = new PaymentDialog(documents);
             paymentDialog.showAndWait();
         });
@@ -73,7 +79,7 @@ public class MainWindow extends BorderPane {
 
     private Button createPaymentRequestButton() {
         Button requestBtn = new Button("Заявка на оплату");
-        requestBtn.setOnAction(event -> {
+        requestBtn.setOnAction(_ -> {
             PaymentRequestDialog paymentRequestDialog = new PaymentRequestDialog(documents);
             paymentRequestDialog.showAndWait();
         });
@@ -82,15 +88,39 @@ public class MainWindow extends BorderPane {
 
     private Button createSaveButton() {
         Button saveBtn = new Button("Сохранить");
-        saveBtn.setOnAction(event -> {
-
-        });
+        saveBtn.setOnAction(_ -> saveDocuments());
         return saveBtn;
+    }
+
+    private void saveDocuments() {
+        Window owner = getOwnerWindow();
+
+        if (documents.isEmpty()) {
+            DialogUtils.showWarning(owner, "Список документов пуст. Нечего сохранять!");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Сохранить документы");
+
+        FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON файлы (*.json)", "*.json");
+        fileChooser.getExtensionFilters().add(jsonFilter);
+
+        File file = fileChooser.showSaveDialog(owner);
+        if (file != null) {
+            try {
+                storageService.saveToFile(file, documents);
+                DialogUtils.showInfo(owner, "Документы успешно сохранены в файл: " + file.getName());
+            } catch (Exception e) {
+                DialogUtils.showError(owner, "Ошибка при сохранении файла: " + e.getMessage());
+            }
+        }
+
     }
 
     private Button createLoadButton() {
         Button loadBtn = new Button("Загрузить");
-        loadBtn.setOnAction(event -> {
+        loadBtn.setOnAction(_ -> {
 
         });
         return loadBtn;
@@ -98,7 +128,7 @@ public class MainWindow extends BorderPane {
 
     private Button createViewButton() {
         Button viewBtn = new Button("Просмотр");
-        viewBtn.setOnAction(event -> {
+        viewBtn.setOnAction(_ -> {
 
         });
         return viewBtn;
@@ -108,5 +138,9 @@ public class MainWindow extends BorderPane {
         Button exitBtn = new Button("Выход");
         exitBtn.setOnAction(_ -> Platform.exit());
         return exitBtn;
+    }
+
+    private Window getOwnerWindow() {
+        return getScene() == null ? null : getScene().getWindow();
     }
 }
