@@ -16,4 +16,24 @@ public abstract class DialogUtils { // Подсмотрел фишку с util �
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    public static void showWarning(Window owner, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.initOwner(owner);
+        alert.setTitle("Предупреждение");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public static void showInfo(Window owner, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.initOwner(owner);
+        alert.setTitle("Информация");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }

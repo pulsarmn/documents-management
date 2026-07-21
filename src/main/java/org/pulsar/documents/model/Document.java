@@ -1,11 +1,20 @@
 package org.pulsar.documents.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Invoice.class, name = "INVOICE"),
+        @JsonSubTypes.Type(value = Payment.class, name = "PAYMENT"),
+        @JsonSubTypes.Type(value = PaymentRequest.class, name = "PAYMENT_REQUEST")
+})
 public abstract class Document {
 
     private String number;
