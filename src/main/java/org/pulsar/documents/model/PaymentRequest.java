@@ -12,6 +12,8 @@ public class PaymentRequest extends Document {
     private BigDecimal currencyRate;
     private BigDecimal commission;
 
+    public PaymentRequest() {}
+
     public PaymentRequest(String number, LocalDate date, String user, BigDecimal sum, String counterparty, Currency currency, BigDecimal currencyRate, BigDecimal commission) {
         super(number, date, user, sum);
         this.counterparty = counterparty;

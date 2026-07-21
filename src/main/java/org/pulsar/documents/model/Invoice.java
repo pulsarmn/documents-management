@@ -12,6 +12,8 @@ public class Invoice extends Document {
     private String product;
     private int count;
 
+    public Invoice() {}
+
     public Invoice(String number, LocalDate date, String user, BigDecimal sum, Currency currency, BigDecimal currencyRate, String product, int count) {
         super(number, date, user, sum);
         this.currency = currency;

@@ -22,6 +22,8 @@ public abstract class Document {
     private String user;
     private BigDecimal sum;
 
+    public Document() {}
+
     public Document(String number, LocalDate date, String user, BigDecimal sum) {
         this.number = number;
         this.date = date;
